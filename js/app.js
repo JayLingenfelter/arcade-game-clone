@@ -24,6 +24,8 @@ Enemy.prototype.update = function(dt) {
       // Check if the game is running and if the enemy is right
       // of the bounds of the canvas, set the enemy to the left
       this.x = -100;
+      // Defines a randomized speed greater than zero for each
+      // enemy moving left to right
       this.speed = 80*Math.floor(Math.random()*5 + 1);
     }
     this.checkCollisions();
@@ -40,7 +42,8 @@ Enemy.prototype.checkCollisions = function() {
   var enemyLeftX = this.x - 55;
   var enemyTopY = this.y - 55;
   var enemyBottomY = this.y + 55;
-
+  // Defines visual bounds of the enemy sprite and resets the
+  // player avatar if its position is inside those bounds
   if (player.x < enemyRightX && player.x > enemyLeftX && player.y < enemyBottomY && player.y > enemyTopY) {
     player.resetPosition();
   }
@@ -59,15 +62,20 @@ var Player = function(dt) {
 
 }
 
+// Checks to see if the player sprite is in the end
+// area before each move, then moves
 Player.prototype.update = function(dt) {
     this.endGame(this.y);
     this.move(dt)
   }
 
+// Render function to draw the player sprite
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
 
+// Returns a move state for each valid keypress,
+// to be used by move()
 Player.prototype.handleInput = function(key) {
   switch(key) {
     case('up'):
@@ -85,9 +93,11 @@ Player.prototype.handleInput = function(key) {
     default:
       this.status = 'rest';
   }
-
 }
 
+// Takes the move state returned by handleInput(),
+// checks if the player is inside the legal play
+// area, and if so moves the sprite
 Player.prototype.move = function(dt) {
   if (this.status === 'moveUp' && this.y > -10) {
     this.y -= dt * 150;
@@ -103,11 +113,14 @@ Player.prototype.move = function(dt) {
   }
 }
 
+// Resets the player avatar to the start position
 Player.prototype.resetPosition = function() {
   this.x = this.beginX;
   this.y = this.beginY;
 }
 
+// Puts the app in the end state, ceasing enemy spawn,
+// and pops up an alert announcing the end
 Player.prototype.endGame = function() {
   if (this.y <= -10) {
     running = 2;
@@ -138,6 +151,8 @@ document.addEventListener('keydown', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
+// Listens for keyup after valid keydowns to stop the player
+// from moving when they aren't trying to
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'rest',
